@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+@author: Peter Hansen
+@copyright: p3337.de All rights reserved.
+-->
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   minWidth="850" minHeight="550" creationComplete="creationCompleteHandler(event)">
+	
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		
+		s|Panel {
+			skinClass: ClassReference("de.p3337.watercolorbox.skin.panelCustomSkin");
+		}
+		
+		s|Label {
+			fontWeight: bold;
+			textAlign: left;
+			color: #333333;
+		}
+		
+		s|Button {
+			skinClass: ClassReference("de.p3337.watercolorbox.skin.buttonCustomSkin");
+		}
+		
+	</fx:Style>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			import de.p3337.watercolorbox.handler.MenuButtonHandler;
+			import de.p3337.watercolorbox.storage.Storage;
+
+			[Embed(source="image/brush.png")]
+			[Bindable]
+			public var imgBrushSource:Class;
+			
+			[Embed(source="image/wcb-logo_small3.png")]
+			[Bindable]
+			public var imgLogoSource:Class;
+			
+			[Bindable]
+			private var numberOfStrokes:uint = 0;
+			
+			private var storage:Storage;
+			private var painter:Painter;
+			private var menuButtonHandler:MenuButtonHandler;
+			
+			public function creationCompleteHandler(event:FlexEvent):void {
+				storage = new Storage();
+				storage.addEventListener("strokesChanged", function():void {
+					numberOfStrokes = storage.getNumberOfStrokes();
+				});
+				
+				painter = new Painter(this, storage);
+				menuButtonHandler = new MenuButtonHandler(this, painter);
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:Rect width="850" height="550">
+		<s:fill>
+			<!-- <s:SolidColor color="0xF8F2DA" /> -->
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="white" />
+				<s:GradientEntry color="white" />
+				<s:GradientEntry color="0xC2DFFF" />
+				<s:GradientEntry color="0xBDDFFF" />
+				<s:GradientEntry color="0xC2DFFF" />
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	
+	<s:HGroup x="0" y="5" width="100%" horizontalAlign="center">
+		<s:Image width="475" source="{imgLogoSource}"/>
+	</s:HGroup>
+	
+	<s:Panel x="10" y="120" width="135" height="420" title="Menu">
+		<s:VGroup id="mainMenuVGroup" gap="10" paddingLeft="10" paddingTop="10">
+			<s:Label width="110" text="Brush size"/>
+			<s:HSlider id="brushSizeSlider" x="0" y="10" width="110" height="18" maximum="5" minimum="0.5"
+					   snapInterval="0.5" value="2"/>
+			
+			<s:Spacer height="3"/>
+			<s:Label width="110" text="Alpha"/>
+			<s:HSlider id="alphaSlider" x="0" y="10" width="110" height="18" maximum="100"
+					   minimum="0" snapInterval="1" value="60"/>
+			
+			<s:Spacer height="3"/>
+			<s:Label text="Brush color"/>
+			<mx:ColorPicker id="brushColorPicker" x="23" y="3" width="110" selectedColor="0x0066FF"/>
+			
+			<s:Spacer height="10"/>
+			<s:Button id="btnStartRepainting" width="110" label="Repaint" enabled="{numberOfStrokes > 0}"/>
+			<s:Button id="btnUndo" width="110" label="Undo" enabled="{numberOfStrokes > 0}"/>
+			<s:Button id="btnDelete" width="110" label="Clear" enabled="{numberOfStrokes > 0}"/>
+			<s:Button id="btnSaveImage" width="110" label="Save image" enabled="{numberOfStrokes > 0}"/>
+		</s:VGroup>
+		
+		<s:VGroup id="repaintingMenuVGroup" visible="false" gap="10" paddingLeft="10" paddingTop="10">
+			<s:Label text="Repainting speed"/>
+			<s:HSlider id="pointsToDrawPerFrameSlider" x="5" y="15" width="100" height="18"
+					   liveDragging="true" maximum="25" minimum="5" snapInterval="1" value="5"/>
+			<s:Button id="btnStopRepainting" width="110" label="abort"/>	
+		</s:VGroup>
+	</s:Panel>
+	
+	<s:Panel id="canvas" x="165" y="120" width="672" height="420" title="Canvas"/>
+	<s:Graphic id="myGraphic"/>
+	<s:Image id="imgBrush" visible="false" mouseEnabled="false" source="{imgBrushSource}"/>
+	
+</s:Application>
