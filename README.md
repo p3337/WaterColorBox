@@ -23,4 +23,4 @@ A demonstration can be found under https://watercolorbox.p3337.de.
 
 ## License
 
-These templates are licensed under the MIT License, see the `LICENSE` file for more information.
+These templates are licensed under the MIT License, see the [LICENSE](LICENSE) file for more information.
